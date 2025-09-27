@@ -47,6 +47,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -83,14 +84,73 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
+  MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+  int count = 3;
+    int step = 0;
+    while (1)
+    {
+  	  if(count <= 0){
+  		  switch(step){
+  		  case 0:
+  			  count = 2;
+  			  step = 1;
+  			  break;
+  		  case 1:
+  			  count = 5;
+  			  step = 2;
+  			  break;
+  		  case 2:
+  			  count = 2;
+  			  step = 3;
+  			  break;
+  		  case 3:
+  			  count = 5;
+  			  step = 0;
+  			  break;
+  		  }
+  	  }
+  	    switch(step){
+  	    case 0:
+  	    	HAL_GPIO_WritePin(NS_GREEN_GPIO_Port, NS_GREEN_Pin, GPIO_PIN_RESET);
+  	    	HAL_GPIO_WritePin(EW_RED_GPIO_Port, EW_RED_Pin, GPIO_PIN_RESET);
+  	    	HAL_GPIO_WritePin(NS_YEL_GPIO_Port, NS_YEL_Pin, GPIO_PIN_SET);
+  	    	HAL_GPIO_WritePin(NS_RED_GPIO_Port, NS_RED_Pin, GPIO_PIN_SET);
+  	        HAL_GPIO_WritePin(EW_YEL_GPIO_Port, EW_YEL_Pin, GPIO_PIN_SET);
+  	        HAL_GPIO_WritePin(EW_GREEN_GPIO_Port, EW_GREEN_Pin, GPIO_PIN_SET);
+  	        break;
+  	    case 1:
+  	    	HAL_GPIO_WritePin(NS_YEL_GPIO_Port, NS_YEL_Pin, GPIO_PIN_RESET);
+  	        HAL_GPIO_WritePin(EW_RED_GPIO_Port, EW_RED_Pin, GPIO_PIN_RESET);
+  	        HAL_GPIO_WritePin(NS_GREEN_GPIO_Port, NS_GREEN_Pin, GPIO_PIN_SET);
+  	        HAL_GPIO_WritePin(NS_RED_GPIO_Port, NS_RED_Pin, GPIO_PIN_SET);
+  	        HAL_GPIO_WritePin(EW_YEL_GPIO_Port, EW_YEL_Pin, GPIO_PIN_SET);
+  	        HAL_GPIO_WritePin(EW_GREEN_GPIO_Port, EW_GREEN_Pin, GPIO_PIN_SET);
+  	        break;
+          case 2:
+          	HAL_GPIO_WritePin(NS_RED_GPIO_Port, NS_RED_Pin, GPIO_PIN_RESET);
+  	        HAL_GPIO_WritePin(EW_GREEN_GPIO_Port, EW_GREEN_Pin, GPIO_PIN_RESET);
+  	        HAL_GPIO_WritePin(NS_GREEN_GPIO_Port, NS_GREEN_Pin, GPIO_PIN_SET);
+  	        HAL_GPIO_WritePin(NS_YEL_GPIO_Port, NS_YEL_Pin, GPIO_PIN_SET);
+  	        HAL_GPIO_WritePin(EW_YEL_GPIO_Port, EW_YEL_Pin, GPIO_PIN_SET);
+  	        HAL_GPIO_WritePin(EW_RED_GPIO_Port, EW_RED_Pin, GPIO_PIN_SET);
+  	        break;
+  	    case 3:
+  	    	HAL_GPIO_WritePin(NS_RED_GPIO_Port, NS_RED_Pin, GPIO_PIN_RESET);
+  	        HAL_GPIO_WritePin(EW_YEL_GPIO_Port, EW_YEL_Pin, GPIO_PIN_RESET);
+  	        HAL_GPIO_WritePin(NS_GREEN_GPIO_Port, NS_GREEN_Pin, GPIO_PIN_SET);
+  	        HAL_GPIO_WritePin(NS_YEL_GPIO_Port, NS_YEL_Pin, GPIO_PIN_SET);
+  	        HAL_GPIO_WritePin(EW_GREEN_GPIO_Port, EW_GREEN_Pin, GPIO_PIN_SET);
+  	        HAL_GPIO_WritePin(EW_RED_GPIO_Port, EW_RED_Pin, GPIO_PIN_SET);
+              break;
+  	    }
+  	    count--;
+  	    HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -131,6 +191,33 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_GPIO_Init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, NS_RED_Pin|NS_YEL_Pin|NS_GREEN_Pin|EW_RED_Pin
+                          |EW_YEL_Pin|EW_GREEN_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : NS_RED_Pin NS_YEL_Pin NS_GREEN_Pin EW_RED_Pin
+                           EW_YEL_Pin EW_GREEN_Pin */
+  GPIO_InitStruct.Pin = NS_RED_Pin|NS_YEL_Pin|NS_GREEN_Pin|EW_RED_Pin
+                          |EW_YEL_Pin|EW_GREEN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
 }
 
 /* USER CODE BEGIN 4 */
